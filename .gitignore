@@ -5,4 +5,4 @@ mlruns/
 mlflow.db
 mlartifacts/
 mlflow_server.log
-outputs/
+confusion_matrix.png

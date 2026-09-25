@@ -32,6 +32,9 @@ except FileNotFoundError:
 X = iris.drop('target', axis=1)
 y = iris['target']
 
+tracking_uri = os.environ.get("MLFLOW_TRACKING_URI")
+mlflow.set_tracking_uri(tracking_uri)
+
 mlflow.set_experiment("iris-random-forest")
 
 # Iniciar un experimento de MLflow
@@ -65,17 +68,18 @@ with mlflow.start_run():
     mlflow.log_param("n_samples", len(iris))
     mlflow.log_metric("accuracy", accuracy)
 
-    # Matriz de confusión como artefacto
-    cm = confusion_matrix(y_test, y_pred)
-    fig, ax = plt.subplots(figsize=(6, 5))
-    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax)
-    ax.set_xlabel("Predicción")
-    ax.set_ylabel("Real")
-    ax.set_title("Matriz de confusión")
-    os.makedirs("outputs", exist_ok=True)
-    fig.savefig("outputs/confusion_matrix.png")
-    plt.close(fig)
-    mlflow.log_artifact("outputs/confusion_matrix.png")
-
     print(f"Modelo entrenado y precisión: {accuracy:.4f}")
     print("Experimento registrado con MLflow.")
+
+    # --- Sección de Reporte para CML ---
+    # 1. Generar la matriz de confusión
+    cm = confusion_matrix(y_test, y_pred)
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
+    plt.title('Matriz de Confusión')
+    plt.xlabel('Predicciones')
+    plt.ylabel('Valores Reales')
+    plt.savefig('confusion_matrix.png')
+    mlflow.log_artifact('confusion_matrix.png')
+    print("Matriz de confusión guardada como 'confusion_matrix.png'")
+    # --- Fin de la sección de Reporte ---
