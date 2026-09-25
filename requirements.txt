@@ -3,3 +3,4 @@ pandas==2.2.2
 numpy==1.26.4
 dvc==3.32.0
 mlflow
+pathspec<0.12  # dvc 3.32 no es compatible con pathspec>=0.12
